@@ -4,7 +4,11 @@ import './App.css';
 
 function App() {
 
-  const [viewer, setViewer] = useState(1);
+  const [viewer, setViewer] = useState(0);
+
+  function Create() {
+    return (<div>Create</div>);
+  }
 
   function Read() {
     fetch("http://localhost:8081/listProducts")
@@ -15,9 +19,9 @@ function App() {
 
   function loadProducts(products) {
     // Find the element “col” in HTML
-    var productCard = document.getElementById("col");
+    var productCard = document.createElement("div");
 
-    var cards = [];
+    
     for (var i = 1; i <= products.length; i++) {
       let item = products.find((product) => product.id === i);
       if (item) {
@@ -51,17 +55,43 @@ function App() {
         </div> `;
         // append new division
         productCard.appendChild(AddCard);
-
-        let ccard = document.getElementById(card);
-        cards.push(ccard);
       }
     } // end of for
-
+    return (productCard);
    
   }
 }
 
+
+function Update() {
+  return (<div>Update</div>);
+}
+
+function Delete() {
+  return(<div>Delete</div>);
+}
+
+const viewCreate = () => {
+  setViewer(0);
+}
+
+const viewRead = () => {
+  setViewer(1);
+}
+
+const viewUpdate = () => {
+  setViewer(2);
+}
+
+const viewDelete = () => {
+  setViewer(3);
+}
+
   return (<div>
+    <button type="button" className="btn btn-primary" onClick={viewCreate}>Create</button>
+    <button type="button" className="btn btn-primary" onClick={viewRead}>Read</button>
+    <button type="button" className="btn btn-primary" onClick={viewUpdate}>Update</button>
+    <button type="button" className="btn btn-primary" onClick={viewDelete}>Delete</button>
     {viewer === 0 && <Create />}
     {viewer === 1 && <Read />}
     {viewer === 2 && <Update />}
