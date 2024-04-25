@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import "bootstrap/dist/css/bootstrap.css";
 import "./App.css";
@@ -97,54 +97,41 @@ function App() {
   }
 
   function Read() {
-    fetch("http://localhost:8081/listProducts")
+
+    const [myProducts, setMyProducts] = useState([]);
+
+    useEffect(() => {
+      fetch("http://localhost:8081/products")
       .then((response) => response.json())
       .then((products) => {
-        loadProducts(products);
-      });
+        setMyProducts(products);
+      })
+    }, []);
 
-    function loadProducts(products) {
-      // Find the element “col” in HTML
-      var productCard = document.createElement("div");
-
-      for (var i = 1; i <= products.length; i++) {
-        let item = products.find((product) => product.id === i);
-        if (item) {
-          let card = "card" + i.toString();
-          let id = item.id;
-          let name = item.title;
-          let price = item.price;
-          let url = item.imageUrl;
-          let description = item.description;
-          let cat = item.category;
-          let rating = item.rating;
-
-          // create a new HTML div division
-          let AddCard = document.createElement("div");
-          // add class = “col” to new division for Bootstrap
-          AddCard.classList.add("col");
-          // create Bootstrap card
-          AddCard.innerHTML = `
-        <div id=${card} class="card shadow-sm">
-            <img src=${url} class="card-img-top" alt="..."></img>    
-            <div  class="card-body">
-            <p class="card-text"> <strong>${name}</strong>, ${cat} $ ${price} <br> ${description} <br> ${rating} </p>
-                    <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+    const ShowProducts = () => {
+      
+      return (
+        <div className="container mt-3">
+          <div className="row">
+            {myProducts.map(product => (
+              <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div className="card">
+                  <img src={product.image} className="card-img-top" alt={product.title} style={{objectFit:'cover', height:'20px'}} />
+                  <div className = "card-body">
+                    <h5 className="card-title">{product.title}</h5>
+                    <p className="card-text"><em>{product.category}</em> <br /> {product.description}</p>
+                    <p className="card-text">{product.rating.rate}, {product.rating.count} reviews</p>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
+                  </div>
                 </div>
-            </div>
-        </div> `;
-          // append new division
-          productCard.appendChild(AddCard);
-        }
-      } // end of for
-      return productCard;
+            ))}
+          </div>
+        </div>
+      )
     }
-  }
+
+    return <div><ShowProducts /></div>;
+  } // end of function
 
   function Update() {
     return <div>Update</div>;
