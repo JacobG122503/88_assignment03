@@ -15,7 +15,7 @@ const port = "8081";
 const host = "localhost";
 
 const { MongoClient } = require("mongodb");
-// MongoDB
+
 const url = "mongodb://127.0.0.1:27017";
 const dbName = "secoms319";
 const client = new MongoClient(url);
@@ -50,4 +50,58 @@ app.get("/products/:id", async (req, res) => {
     console.log("Results :", results);
     if (!results) res.send("Not Found").status(404);
     else res.send(results).status(200);
+});
+
+app.post("/addProduct", async (req, res) => {
+    try {
+        const newProduct = req.body;
+
+        const results = await db.collection("fakestore").insertOne(newProduct);
+
+        res.status(200).json({ message: "Product added successfully", insertedId: results.insertedId });
+    } catch (error) {
+        console.error("An error occurred:", error);
+        res.status(500).json({ error: 'An internal server error occurred' });
+    }
+});
+
+app.delete("/deleteProduct/:id", async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        await client.connect();
+        console.log("Product to delete :", id);
+        const query = { id: id };
+
+        const results = await db.collection("fakestore").deleteOne(query);
+        res.status(200);
+        res.send(results);
+    }
+    catch (error) {
+        console.error("Error deleting product:", error);
+        res.status(500).send({ message: 'Internal Server Error' });
+    }
+});
+
+app.put("/updateProduct/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    const query = { id: id };
+    await client.connect();
+    console.log("Product to Update :", id);
+    console.log(req.body);
+    const updateData = {
+        $set: {
+            "title": req.body.title,
+            "price": req.body.price,
+            "description": req.body.description
+        }
+    };
+    const options = {};
+    const results = await db.collection("fakestore").updateOne(query, updateData, options);
+
+    if (results.matchedCount === 0) {
+        return res.status(404).send({ message: 'Product not found' });
+    }
+
+    res.status(200);
+    res.send(results);
 });
