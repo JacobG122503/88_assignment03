@@ -90,9 +90,9 @@ app.put("/updateProduct/:id", async (req, res) => {
     console.log(req.body);
     const updateData = {
         $set: {
-            "title": req.body.title,
+           // "title": req.body.title,
             "price": req.body.price,
-            "description": req.body.description
+           // "description": req.body.description
         }
     };
     const options = {};

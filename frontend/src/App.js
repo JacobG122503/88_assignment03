@@ -28,15 +28,14 @@ function App() {
           image: data.image,
           category: data.category,
           rating: {
-            rate: data.rate,
-            count: data.count
-          }
-        })
+            rate: data.rating,
+            count: data.ratingCount,
+          },
+        }),
       })
         .then((response) => response.json())
         .then((newProduct) => {
           console.log(newProduct);
-          //showNewProduct(newProduct);
         });
     };
 
@@ -157,9 +156,8 @@ function App() {
                       <em>{product.category}</em> <br /> {product.description}
                     </p>
                     <p className="card-text">
-                      
                       {product.rating.rate}
-                       <svg
+                      <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
                         height="16"
@@ -168,7 +166,8 @@ function App() {
                         viewBox="0 0 16 16"
                       >
                         <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                      </svg>, {product.rating.count} reviews
+                      </svg>
+                      , {product.rating.count} reviews
                     </p>
                     <p>ID: {product.id}</p>
                   </div>
@@ -188,7 +187,88 @@ function App() {
   } // end of function
 
   function Update() {
-    return <div>Update</div>;
+
+    const [updatedProduct, setUpdatedProduct] = useState([]);
+    const [toUpdate, setToUpdate] = useState(0);
+
+    const UpdateProducts = () => {
+      return (
+        <div className="container mt-3">
+        <div className="row">
+          <div
+            key={updatedProduct.id}
+            className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
+          >
+            <div className="card">
+              <img
+                src={updatedProduct.image}
+                className="card-img-top"
+                alt={updatedProduct.title}
+              />
+              <div className="card-body">
+                <h5 className="card-title">{updatedProduct.title}</h5>
+                <p className="card-text"> ${updatedProduct.price}</p>
+                <p className="card-text">
+                  <em>{updatedProduct.category}</em> <br />{" "}
+                  {updatedProduct.description}
+                </p>
+              </div>
+              <input type="number" id="new-price" placeholder="new price"></input>
+              <button type="button" onClick={UpdatePrice}>
+                Update Price
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      )
+    }
+
+    const UpdatePrice = () => {
+
+      var id = document.getElementById("product-to-update").value;
+      var price_ = document.getElementById("new-price").value;
+
+      fetch(`http://localhost:8081/updateProduct/${id}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+       price: price_
+      }),
+    })
+      .then((response) => response.json())
+      .then((updatedProduct) => {
+        console.log(updatedProduct);
+        setToUpdate(0);
+      });
+    }
+
+    const getUpdate = () => {
+      var id = document.getElementById("product-to-update").value;
+      console.log(id);
+
+      fetch(`http://localhost:8081/products/${id}`)
+        .then((response) => response.json())
+        .then((productToUpdate) => {
+          setToUpdate(1);
+          setUpdatedProduct(productToUpdate);
+        });
+    }
+ 
+    return (
+      <div>
+        <h3>Enter a product id number to update: </h3>
+        <input type="number" id="product-to-update"></input>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={getUpdate}
+        >
+          Update
+        </button>
+        {toUpdate === 1 && <UpdateProducts />}
+      </div>
+    );
   }
 
   function Delete() {
@@ -219,7 +299,7 @@ function App() {
                     {deletedProduct.description}
                   </p>
                 </div>
-                <button type="button" onClick={Delete}>
+                <button type="button" onClick={Deleted}>
                   Confirm Delete
                 </button>
                 <button type="button" onClick={CancelDelete}>
@@ -232,6 +312,7 @@ function App() {
       );
     };
 
+    //show product to delete before actually deleting it
     const confirmDelete = () => {
       var id = document.getElementById("product-to-delete").value;
       console.log(id);
@@ -245,7 +326,7 @@ function App() {
         });
     };
 
-    const Delete = () => {
+    const Deleted = () => {
       var id = document.getElementById("product-to-delete").value;
 
       fetch(`http://localhost:8081/deleteProduct/${id}`, {
