@@ -28,6 +28,25 @@
   color: #61dafb;
 }
 
+.input-headers {
+  font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+.btn-secondary {
+  margin-left: 5px;
+  background-color:royalblue;
+}
+
+.btn-primary {
+  background-color: aqua;
+  color: black;
+  font-weight: 800;
+}
+
+.navbar {
+  background-color:navy;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
