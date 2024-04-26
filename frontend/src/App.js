@@ -13,33 +13,31 @@ function App() {
     formState: { errors },
   } = useForm();
 
-  
-
   function Create() {
-
     const createNewProduct = (data) => {
       setMyProducts([...myProducts, data]);
       console.log("Creating new product");
-      fetch(`http://localhost:8081/addProduct`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        id: `${myProducts.id}`,
-        title: `${myProducts.title}`,
-        price: `${myProducts.price}`,
-        descripton: `${myProducts.description}`,
-        image: `${myProducts.image}`,
-        rating: Object,
-          rate: `${myProducts.rating}`,
-          count: `${myProducts.ratingCount}`
-      }),
-    })
-      .then((response) => response.json())
-      .then((newProduct) => {
-        console.log(newProduct);
-        //showNewProduct(newProduct);
-      });
-  
+      fetch("http://localhost:8081/addProduct", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: data.id,
+          title: data.title,
+          price: data.price,
+          description: data.description,
+          image: data.image,
+          category: data.category,
+          rating: {
+            rate: data.rate,
+            count: data.count
+          }
+        })
+      })
+        .then((response) => response.json())
+        .then((newProduct) => {
+          console.log(newProduct);
+          //showNewProduct(newProduct);
+        });
     };
 
     return (
@@ -74,7 +72,7 @@ function App() {
             placeholder=""
             className="form-control"
           />
-          </div>
+        </div>
 
         <div className="form-group">
           <p>Description</p>
@@ -154,12 +152,25 @@ function App() {
                   />
                   <div className="card-body">
                     <h5 className="card-title">{product.title}</h5>
+                    <p className="card-text"> ${product.price}</p>
                     <p className="card-text">
                       <em>{product.category}</em> <br /> {product.description}
                     </p>
                     <p className="card-text">
-                      {product.rating.rate}, {product.rating.count} reviews
+                      
+                      {product.rating.rate}
+                       <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-star-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                      </svg>, {product.rating.count} reviews
                     </p>
+                    <p>ID: {product.id}</p>
                   </div>
                 </div>
               </div>
@@ -185,11 +196,9 @@ function App() {
     const [toDelete, setToDelete] = useState(0);
 
     const DeleteProducts = () => {
-
       console.log(`${deletedProduct}`);
 
       return (
-        
         <div className="container mt-3">
           <div className="row">
             <div
@@ -204,12 +213,18 @@ function App() {
                 />
                 <div className="card-body">
                   <h5 className="card-title">{deletedProduct.title}</h5>
+                  <p className="card-text"> ${deletedProduct.price}</p>
                   <p className="card-text">
-                    <em>{deletedProduct.category}</em> <br /> {deletedProduct.description}
+                    <em>{deletedProduct.category}</em> <br />{" "}
+                    {deletedProduct.description}
                   </p>
                 </div>
-                <button type="button" onClick={Delete}>Confirm Delete</button>
-                <button type="button" onClick={CancelDelete}>Cancel Delete</button>
+                <button type="button" onClick={Delete}>
+                  Confirm Delete
+                </button>
+                <button type="button" onClick={CancelDelete}>
+                  Cancel Delete
+                </button>
               </div>
             </div>
           </div>
@@ -228,14 +243,11 @@ function App() {
           setToDelete(1);
           setDeletedProduct(productToDelete);
         });
-      
-
-    }
+    };
 
     const Delete = () => {
-
       var id = document.getElementById("product-to-delete").value;
-      
+
       fetch(`http://localhost:8081/deleteProduct/${id}`, {
         method: "DELETE",
         headers: { "content-type": "application/json" },
@@ -246,19 +258,25 @@ function App() {
           console.log(deleteThisproduct);
         });
 
-        setToDelete(0);
-    }
+      setToDelete(0);
+    };
 
     const CancelDelete = () => {
       setToDelete(0);
-    }
+    };
 
     return (
       <div>
         <h3>Enter a product id number to delete: </h3>
         <input type="number" id="product-to-delete"></input>
-        <button type="button" className="btn btn-secondary" onClick={confirmDelete}>Delete</button>
-        { toDelete === 1 && < DeleteProducts />}
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={confirmDelete}
+        >
+          Delete
+        </button>
+        {toDelete === 1 && <DeleteProducts />}
       </div>
     );
   }
