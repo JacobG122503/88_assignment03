@@ -34,7 +34,7 @@ function App() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          id: data.id,
+          id: Number(data.id),
           title: data.title,
           price: data.price,
           description: data.description,
